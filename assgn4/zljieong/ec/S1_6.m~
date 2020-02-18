@@ -1,0 +1,40 @@
+close all
+clear all
+load('../data/bananas.mat');
+% metamericLight(ripe,overripe);
+f=ripe;
+g=overripe;
+
+cmf = csvread('../data/ciexyz64_1.csv');
+init_lambda = 400;
+end_lambda = 700;
+space_lambda = 10;
+lambdas = init_lambda:space_lambda:end_lambda;
+
+R=cmf(ismember(cmf(:,1),400:10:700 ),:)';
+R=R(2:end,:);
+
+a = 1.4388*10^-2;
+temps = 2500e3:50e3:10000e3;
+L_t_lambda= repelem(temps,31,1);
+L_t_lambda=(L_t_lambda./lambdas'.^5)./(exp( 1.4388*10^-2 ./(lambdas'.*L_t_lambda))-1);
+L_t_lambda=L_t_lambda./sum(L_t_lambda);
+L_f=R.*[f';f';f'];
+L_g=R.*[g';g';g'];
+D=vecnorm(L_f*L_t_lambda-L_g*L_t_lambda);
+
+[~,idic] = min(D);
+T=temps(idic);
+figure
+plot(temps,D)
+grid on
+title('distance as a function of temperature')
+xlabel('Temperature')
+ylabel('distance')
+
+
+figure
+plot(400:10:700,L_t_lambda(T)./sum(L_t_lambda(T)) )
+grid on
+title(sprintf('Spectral Power Distribution at best T = %dK ',T/1000))
+xlabel('wavelength')

@@ -1,0 +1,9 @@
+function [dictionary] = getDictionary(imgPaths, alpha, K, method)
+%GETDICTIONARY Summary of this function goes here
+%   Detailed explanation goes here
+if method==random
+    points=getRandomPoints(alpha);
+end
+
+end
+

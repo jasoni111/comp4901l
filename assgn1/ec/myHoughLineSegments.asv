@@ -1,0 +1,62 @@
+function [liness] = myHoughLineSegments(rhoRes, thetaRes,lineRhos, lineThetas, Im)
+MaxDistance=25
+
+Bin=Im>0;
+[yPeak,xPeak]=find(Bin);
+yPeak=yPeak;
+xPeak=xPeak;
+
+templine.point1 = [0,0];
+templine.point2 = [0,0];
+
+liness = repmat(templine,1,0);
+linecount=1;
+
+[ySize,xSize]=size(Im);
+
+for line = 1:length(lineRhos)
+    
+    theta = (lineThetas(line)-1 )*thetaRes;
+    
+    rho_all = int32( (xPeak.*cos(theta) + yPeak.*sin(theta))./rhoRes );
+    index = find(rho_all == lineRhos(line) );
+    
+    yPeakOnLine = yPeak(index); 
+    xPeakOnLine = xPeak(index);
+    
+%     if length(yPeakOnLine)<=2,continue ,end
+%     
+%     r_range = max(yPeakOnLine) - min(yPeakOnLine);
+%     c_range = max(xPeakOnLine) - min(xPeakOnLine);
+%     if r_range > c_range
+%         % Sort first on r, then on c
+%         sorting_order = [1 2];
+%     else
+%         % Sort first on c, then on r
+%         sorting_order = [2 1];
+%     end
+%     [rc_new] = sortrows([yPeakOnLine xPeakOnLine], sorting_order);
+%     yPeakOnLine = rc_new(:,1);
+%     xPeakOnLine = rc_new(:,2);
+    distances=(yPeakOnLine(1:end-1)-yPeakOnLine(2:end) ).^2+...
+            (xPeakOnLine(1:end-1)-xPeakOnLine(2:end) ).^2
+    
+    for i=1:length(yPeakOnLine)-1
+        distance= distances
+        if distance<=MaxDistance
+            templine.point1 = [xPeakOnLine(i),yPeakOnLine(i)];
+            templine.point2 = [xPeakOnLine(i+1),yPeakOnLine(i+1)];
+            liness(linecount)=templine;
+            linecount=linecount+1;
+        end
+        
+    end
+
+%     
+%     templine.point1 = [xPeakOnLine(1),yPeakOnLine(1)];
+%     templine.point2 = [xPeakOnLine(end),yPeakOnLine(end)];
+%     liness(linecount)=templine;
+%     linecount=linecount+1;
+end
+
+end

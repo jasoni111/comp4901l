@@ -1,0 +1,10 @@
+function [filterResponses] = extractFilterResponses(I, filterBank)
+
+I = RGB2Lab(img);
+for loop = 1:size(filterBank,1)
+	size(filterBank{loop},1);
+	filterResponses(:,:,:,loop) = imfilter(I,filterBank{loop});
+end
+
+end
+
